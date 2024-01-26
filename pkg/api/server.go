@@ -140,7 +140,7 @@ func NewServer(log *zap.Logger, handler *Handler, address string, opts ...Server
 		asyncMiddlewares: asyncMiddlewares,
 		httpServer: &http.Server{
 			Addr:    address,
-			Handler: mux,
+			Handler: corsMux,
 		},
 	}
 	return &serv, nil
