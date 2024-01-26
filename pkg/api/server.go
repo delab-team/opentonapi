@@ -11,6 +11,8 @@ import (
 	"github.com/tonkeeper/opentonapi/pkg/pusher/sources"
 	"github.com/tonkeeper/opentonapi/pkg/pusher/sse"
 	"github.com/tonkeeper/opentonapi/pkg/pusher/websocket"
+
+	"github.com/gorilla/handlers"
 )
 
 // Server opens a port and exposes REST-ish API.
