@@ -100,6 +100,14 @@ func NewServer(log *zap.Logger, handler *Handler, address string, opts ...Server
 	if err != nil {
 		return nil, err
 	}
+
+	corsHandler := handlers.CORS(
+        handlers.AllowedOrigins([]string{"*"}), // Разрешить все источники
+        handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}), // Разрешить все методы
+        handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), // Разрешить все заголовки
+        handlers.AllowCredentials(), // Разрешить cookies
+    )
+
 	mux := http.NewServeMux()
 	asyncMiddlewares := []AsyncMiddleware{asyncLoggingMiddleware(log), asyncMetricsMiddleware}
 	asyncMiddlewares = append(asyncMiddlewares, options.asyncMiddlewares...)
@@ -121,6 +129,8 @@ func NewServer(log *zap.Logger, handler *Handler, address string, opts ...Server
 	websocketHandler := websocket.Handler(log, options.txSource, options.traceSource, options.memPool, options.blockSource)
 	mux.Handle("/v2/websocket", wrapAsync(LongLivedConnection, true, chainMiddlewares(websocketHandler, asyncMiddlewares...)))
 	mux.Handle("/", ogenServer)
+
+	corsMux := corsHandler(mux)
 
 	serv := Server{
 		logger:           log,

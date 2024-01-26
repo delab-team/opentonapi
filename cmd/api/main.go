@@ -20,8 +20,6 @@ import (
 	"github.com/tonkeeper/opentonapi/pkg/config"
 	"github.com/tonkeeper/opentonapi/pkg/litestorage"
 	"github.com/tonkeeper/opentonapi/pkg/pusher/sources"
-
-	"github.com/gorilla/handlers"
 )
 
 func main() {
@@ -101,16 +99,6 @@ func main() {
 	if err != nil {
 		log.Fatal("failed to create api handler", zap.Error(err))
 	}
-
-	corsHandler := handlers.CORS(
-        	handlers.AllowedOrigins([]string{"*"}), // Разрешить все источники
-        	handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}), // Разрешить все методы
-        	handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), // Разрешить все заголовки
-        	handlers.AllowCredentials(), // Разрешить cookies
-       )
-
-    	http.Handle("/", corsHandler(h))
-
 
 	metricServer := http.Server{
 		Addr:    fmt.Sprintf(":%v", cfg.App.MetricsPort),
