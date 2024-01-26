@@ -109,7 +109,7 @@ func main() {
 
 	handler := CorsMiddleware(h)
 
-	server, err := api.NewServer(log, h, fmt.Sprintf(":%d", cfg.API.Port),
+	server, err := api.NewServer(log, handler, fmt.Sprintf(":%d", cfg.API.Port),
 		api.WithTransactionSource(source),
 		api.WithBlockSource(source),
 		api.WithTraceSource(tracer),
