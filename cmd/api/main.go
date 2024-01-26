@@ -22,6 +22,22 @@ import (
 	"github.com/tonkeeper/opentonapi/pkg/pusher/sources"
 )
 
+func CorsMiddleware(next http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        w.Header().Set("Access-Control-Allow-Origin", "*")
+        w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+        w.Header().Set("Access-Control-Allow-Headers", "*")
+        w.Header().Set("Access-Control-Expose-Headers", "Authorization")
+
+        if r.Method == "OPTIONS" {
+            w.WriteHeader(http.StatusOK)
+            return
+        }
+
+        next.ServeHTTP(w, r)
+    })
+}
+
 func main() {
 
 	cfg := config.Load()
@@ -90,6 +106,8 @@ func main() {
 		pusherBlockCh,
 		storageBlockCh,
 	})
+
+	handler := CorsMiddleware(h)
 
 	server, err := api.NewServer(log, h, fmt.Sprintf(":%d", cfg.API.Port),
 		api.WithTransactionSource(source),
